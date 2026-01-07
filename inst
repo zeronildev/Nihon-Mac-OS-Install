@@ -21,7 +21,7 @@ WARN="${YELLOW}⚠${NC}"
 # Update these URLs to point to your hosted files
 DYLIB_URL="https://github.com/zeronildev/Nihon-mac/raw/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"  # libNihon.dylib
 UI_URL="https://github.com/zeronildev/Nihon-mac/blob/945d7321aeb6d719f77383d37a94bd8fa4d0a7c0/nihon"     # Nihon.app (Tauri build)
-MODULES_URL="YOUR_MODULES_URL_HERE"  # If you have additional modules/patcher
+ # If you have additional modules/patcher
 
 if [ -w "/Applications" ]; then
     APP_DIR="/Applications"
