@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Nihon Mac OS v0.0.1
+# Nihon Installer v1.0.1
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -18,9 +18,10 @@ CROSS="${RED}✖${NC}"
 INFO="${CYAN}➜${NC}"
 WARN="${YELLOW}⚠${NC}"
 
-DYLIB_URL="https://f3a5dqxez3.ufs.sh/f/ijk9xZzvhn3rFL3oqDstqDCv8hesH9RxTJg2dLVrS5AFwoYc"
-MODULES_URL="https://f3a5dqxez3.ufs.sh/f/ijk9xZzvhn3rRLgqCJ6EwKLWJ0ADYbMyxP8H6QpokZ7F1aiu"
-UI_URL="https://f3a5dqxez3.ufs.sh/f/ijk9xZzvhn3rD2IKHTvR2QK1iVgakWyNDMPsXvcA9eG8xIHn"
+# Update these URLs to point to your hosted files
+DYLIB_URL="https://github.com/zeronildev/Nihon-mac/blob/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"  # libNihon.dylib
+UI_URL="https://github.com/zeronildev/Nihon-mac/blob/945d7321aeb6d719f77383d37a94bd8fa4d0a7c0/nihon"     # Nihon.app (Tauri build)
+MODULES_URL="YOUR_MODULES_URL_HERE"  # If you have additional modules/patcher
 
 if [ -w "/Applications" ]; then
     APP_DIR="/Applications"
@@ -52,10 +53,18 @@ spinner() {
 
 banner() {
     clear
-    echo -e "${BOLD}"
-    cat <<'EOF'  
+    echo -e "${BOLD}${CYAN}"
+    cat <<'EOF'
+    ███╗   ██╗██╗██╗  ██╗ ██████╗ ███╗   ██╗
+    ████╗  ██║██║██║  ██║██╔═══██╗████╗  ██║
+    ██╔██╗ ██║██║███████║██║   ██║██╔██╗ ██║
+    ██║╚██╗██║██║██╔══██║██║   ██║██║╚██╗██║
+    ██║ ╚████║██║██║  ██║╚██████╔╝██║ ╚████║
+    ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+EOF
     echo -e "${NC}"
-    echo -e "${BLUE}=[ Nihon Mac OS installer ]=${NC}"
+    echo -e "${BLUE}=[ Nihon Installer ]=${NC}"
+    echo -e "${CYAN}Roblox Executor for macOS${NC}"
 }
 
 section() {
@@ -66,15 +75,15 @@ section() {
 main() {
     banner
 
+    # Kill any running instances
     killall -9 RobloxPlayer Nihon &>/dev/null || true
-    rm -rf "$APP_DIR/Roblox.app" "$APP_DIR/Nihon.app"
+    
+    # Clean up old installations
+    rm -rf "$APP_DIR/Roblox.app" "$APP_DIR/nihon.app"
     rm -rf ~/Nihon/modules/latest.json ~/Nihon/modules/luau-lsp ~/Nihon/modules/Server
 
     section "Fetching client version"
-    # json=$(curl -fsSL "https://clientsettingscdn.roblox.com/v2/client-version/MacPlayer")
-    # version=$(echo "$json" | grep -o '"clientVersionUpload":"[^"]*' | cut -d'"' -f4)
     local version="version-cfe7460f53b444a5"  
-    # echo -e "${INFO} Latest version: ${BOLD}$version${NC}"
     echo -e "${INFO} Version: ${BOLD}$version${NC}"
 
     section "Downloading Roblox - ($version)"
@@ -83,41 +92,54 @@ main() {
         unzip -oq "$TEMP/RobloxPlayer.zip" -d "$TEMP"
         mv "$TEMP/RobloxPlayer.app" "$APP_DIR/Roblox.app"
         xattr -cr "$APP_DIR/Roblox.app"
-    ) & spinner "Downloading" $!
+    ) & spinner "Downloading Roblox" $!
 
     section "Installing Nihon modules"
     (
+        # Download and install dylib
         curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.zip"
         unzip -oq "$TEMP/libNihon.zip" -d "$TEMP"
         mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
 
+        # Download modules/patcher if needed
         curl -fsSL "$MODULES_URL" -o "$TEMP/modules.zip"
         unzip -oq "$TEMP/modules.zip" -d "$TEMP"
+        
+        # Patch the Roblox binary to load your dylib
         "$TEMP/Resources/Patcher" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib" --strip-codesig --all-yes >/dev/null 2>&1
         mv "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib_patched" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib"
 
-        curl -fsSL "$UI_URL" -o "$TEMP/Nihon.zip"
-        unzip -oq "$TEMP/OpiumwareUI.zip" -d "$TEMP"
+        # Download and install UI
+        curl -fsSL "$UI_URL" -o "$TEMP/NihonUI.zip"
+        unzip -oq "$TEMP/NihonUI.zip" -d "$TEMP"
 
-        mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/modules ~/Nihon/modules/Server ~/Nihon/modules/luau-lsp
-        mv -f "$TEMP/Resources/Server" ~/Nihon/modules/Server/server
-        mv -f "$TEMP/Resources/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
-        mv -f "$TEMP/Nihon.app" "$APP_DIR/Nihon.app"
-    ) & spinner "Installing" $!
+        # Create necessary directories
+        mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules ~/Nihon/modules/Server ~/Nihon/modules/luau-lsp
+        
+        # Move server and LSP if you have them
+        [ -f "$TEMP/Resources/Server" ] && mv -f "$TEMP/Resources/Server" ~/Nihon/modules/Server/server
+        [ -f "$TEMP/Resources/luau-lsp" ] && mv -f "$TEMP/Resources/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
+        
+        # Install UI app
+        mv -f "$TEMP/nihon.app" "$APP_DIR/nihon.app"
+    ) & spinner "Installing Nihon" $!
 
     section "Finishing installation"
     (
         codesign --force --deep --sign - "$APP_DIR/Roblox.app" >/dev/null 2>&1
+        codesign --force --deep --sign - "$APP_DIR/Nihon.app" >/dev/null 2>&1
         rm -rf "$TEMP"
         rm -rf "$APP_DIR/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app" >/dev/null 2>&1
         tccutil reset Accessibility com.Roblox.RobloxPlayer >/dev/null 2>&1
     ) & spinner "Finishing" $!
 
     echo
-    echo -e "${GREEN}${BOLD}Installation complete.${NC}"
-    echo -e "${WARN} Please use an alt account."
+    echo -e "${GREEN}${BOLD}Installation complete!${NC}"
+    echo -e "${INFO} Nihon has been installed to $APP_DIR"
+    echo -e "${WARN} Please use an alt account for safety."
+    
     open "$APP_DIR/Roblox.app"
-    open "$APP_DIR/Nihon.app"
+    open "$APP_DIR/nihon.app"
 }
 
 main
