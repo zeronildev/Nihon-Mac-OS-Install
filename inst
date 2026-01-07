@@ -19,8 +19,8 @@ INFO="${CYAN}➜${NC}"
 WARN="${YELLOW}⚠${NC}"
 
 # Update these URLs to point to your hosted files
-DYLIB_URL="https://github.com/zeronildev/Nihon-mac/blob/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"  # libNihon.dylib
-UI_URL="https://github.com/zeronildev/Nihon-mac/blob/945d7321aeb6d719f77383d37a94bd8fa4d0a7c0/nihon"     # Nihon.app (Tauri build)
+DYLIB_URL="YOUR_DYLIB_URL_HERE"  # libNihon.dylib
+UI_URL="YOUR_UI_APP_URL_HERE"     # Nihon.app (Tauri build)
 MODULES_URL="YOUR_MODULES_URL_HERE"  # If you have additional modules/patcher
 
 if [ -w "/Applications" ]; then
@@ -79,7 +79,7 @@ main() {
     killall -9 RobloxPlayer Nihon &>/dev/null || true
     
     # Clean up old installations
-    rm -rf "$APP_DIR/Roblox.app" "$APP_DIR/nihon.app"
+    rm -rf "$APP_DIR/Roblox.app" "$APP_DIR/Nihon.app"
     rm -rf ~/Nihon/modules/latest.json ~/Nihon/modules/luau-lsp ~/Nihon/modules/Server
 
     section "Fetching client version"
@@ -97,8 +97,8 @@ main() {
     section "Installing Nihon modules"
     (
         # Download and install dylib
-        curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
-        unzip -oq "$TEMP/libNihon.dylib" -d "$TEMP"
+        curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.zip"
+        unzip -oq "$TEMP/libNihon.zip" -d "$TEMP"
         mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
 
         # Download modules/patcher if needed
@@ -121,7 +121,7 @@ main() {
         [ -f "$TEMP/Resources/luau-lsp" ] && mv -f "$TEMP/Resources/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
         
         # Install UI app
-        mv -f "$TEMP/nihon.app" "$APP_DIR/nihon.app"
+        mv -f "$TEMP/Nihon.app" "$APP_DIR/Nihon.app"
     ) & spinner "Installing Nihon" $!
 
     section "Finishing installation"
@@ -139,7 +139,7 @@ main() {
     echo -e "${WARN} Please use an alt account for safety."
     
     open "$APP_DIR/Roblox.app"
-    open "$APP_DIR/nihon.app"
+    open "$APP_DIR/Nihon.app"
 }
 
 main
