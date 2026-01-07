@@ -19,7 +19,7 @@ INFO="${CYAN}➜${NC}"
 WARN="${YELLOW}⚠${NC}"
 
 # Update these URLs to point to your hosted files
-DYLIB_URL="https://github.com/zeronildev/Nihon-mac/raw/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"
+DYLIB_URL="https://github.com/zeronildev/Nihon-mac/blob/b9568b8f3720efe0a6b075c7c0724f13b6691fdb/libNihon.dylib"
 UI_URL="https://github.com/zeronildev/NihonApp/raw/refs/heads/main/NihonApp.zip"
 
 if [ -w "/Applications" ]; then
