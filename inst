@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Nihon Installer v1.0.1
+# Nihon Installer v1.0.0
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -97,7 +97,7 @@ main() {
     section "Installing Nihon modules"
     (
         # Download and install dylib
-        curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.zip"
+        curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
         unzip -oq "$TEMP/libNihon.zip" -d "$TEMP"
         mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
 
