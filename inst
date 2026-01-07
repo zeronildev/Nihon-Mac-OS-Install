@@ -99,10 +99,6 @@ main() {
         # Download and install dylib
         curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
         mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
-
-        # Download modules/patcher if needed
-        curl -fsSL "$MODULES_URL" -o "$TEMP/modules.zip"
-        unzip -oq "$TEMP/modules.zip" -d "$TEMP"
         
         # Patch the Roblox binary to load your dylib
         "$TEMP/Resources/Patcher" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib" --strip-codesig --all-yes >/dev/null 2>&1
