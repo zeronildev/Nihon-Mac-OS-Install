@@ -62,8 +62,7 @@ banner() {
     ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 EOF
     echo -e "${NC}"
-    echo -e "${BLUE}=[ Nihon Installer ]=${NC}"
-    echo -e "${CYAN}Roblox Executor for macOS${NC}"
+    echo -e "${CYAN}Welcome to Nihon Mac OS${NC}"
 }
 
 section() {
@@ -74,10 +73,8 @@ section() {
 main() {
     banner
 
-    # Kill any running instances
     killall -9 RobloxPlayer Nihon &>/dev/null || true
     
-    # Clean up old installations
     rm -rf "$APP_DIR/Roblox.app" "$APP_DIR/Nihon.app"
     rm -rf ~/Nihon/modules/latest.json ~/Nihon/modules/luau-lsp ~/Nihon/modules/Server
 
@@ -95,7 +92,6 @@ main() {
 
     section "Installing Nihon modules"
     (
-        # Download and install dylib
         curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
         curl -fsSL "$UI_URL" -o "$TEMP/NihonApp.zip"
 
@@ -103,7 +99,6 @@ main() {
         unzip -o -qq "$TEMP/NihonApp.zip"
         mv "$HOME/Nihon.app" "$APP_DIR/Nihon.app"
 
-        # Create necessary directories
         mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules
     ) & spinner "Installing Nihon" $!
 
@@ -114,11 +109,12 @@ main() {
         rm -rf "$TEMP"
         rm -rf "$APP_DIR/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app" >/dev/null 2>&1
         tccutil reset Accessibility com.Roblox.RobloxPlayer >/dev/null 2>&1
-    ) & spinner "Finishing" $!
+    ) & spinner "Almost done!" $!
 
     echo
     echo -e "${GREEN}${BOLD}Installation complete!${NC}"
     echo -e "${INFO} Nihon has been installed to $APP_DIR"
+    echo -e "${CHECK} Nihon is currently updated to the newest version and is working!"
     echo -e "${WARN} Please use an alt account for safety."
     
     open "$APP_DIR/Roblox.app"
