@@ -110,7 +110,7 @@ main() {
 
         # Create necessary directories
         mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules ~/Nihon/modules/Server ~/Nihon/modules/luau-lsp
-        
+         
         # Move server and LSP if you have them
         [ -f "$TEMP/Resources/Server" ] && mv -f "$TEMP/Resources/Server" ~/Nihon/modules/Server/server
         [ -f "$TEMP/Resources/luau-lsp" ] && mv -f "$TEMP/Resources/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
@@ -122,7 +122,7 @@ main() {
     section "Finishing installation"
     (
         codesign --force --deep --sign - "$APP_DIR/Roblox.app" >/dev/null 2>&1
-        codesign --force --deep --sign - "$APP_DIR/Nihon.app" >/dev/null 2>&1
+        codesign --force --deep --sign - "$APP_DIR/nihon.app" >/dev/null 2>&1
         rm -rf "$TEMP"
         rm -rf "$APP_DIR/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app" >/dev/null 2>&1
         tccutil reset Accessibility com.Roblox.RobloxPlayer >/dev/null 2>&1
