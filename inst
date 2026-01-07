@@ -19,9 +19,8 @@ INFO="${CYAN}➜${NC}"
 WARN="${YELLOW}⚠${NC}"
 
 # Update these URLs to point to your hosted files
-DYLIB_URL="https://github.com/zeronildev/Nihon-mac/raw/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"  # libNihon.dylib
-UI_URL="https://github.com/zeronildev/Nihon-mac/blob/945d7321aeb6d719f77383d37a94bd8fa4d0a7c0/nihon"     # Nihon.app (Tauri build)
- # If you have additional modules/patcher
+DYLIB_URL="https://github.com/zeronildev/Nihon-mac/raw/af5bbd8791b43c26d0d77e4c69f12cc163d6c5e3/libNihon.dylib"
+UI_URL="https://github.com/zeronildev/Nihon-mac/raw/945d7321aeb6d719f77383d37a94bd8fa4d0a7c0/nihon"
 
 if [ -w "/Applications" ]; then
     APP_DIR="/Applications"
@@ -98,25 +97,17 @@ main() {
     (
         # Download and install dylib
         curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
-        mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
-        
-        # Patch the Roblox binary to load your dylib
-        "$TEMP/Resources/Patcher" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib" --strip-codesig --all-yes >/dev/null 2>&1
-        mv "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib_patched" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib"
+        cp "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
 
         # Download and install UI
-        curl -fsSL "$UI_URL" -o "$TEMP/NihonUI.zip"
-        unzip -oq "$TEMP/NihonUI.zip" -d "$TEMP"
+        curl -fsSL "$UI_URL" -o "$TEMP/nihon.app.zip"
+        unzip -oq "$TEMP/nihon.app.zip" -d "$TEMP"
 
         # Create necessary directories
-        mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules ~/Nihon/modules/Server ~/Nihon/modules/luau-lsp
-         
-        # Move server and LSP if you have them
-        [ -f "$TEMP/Resources/Server" ] && mv -f "$TEMP/Resources/Server" ~/Nihon/modules/Server/server
-        [ -f "$TEMP/Resources/luau-lsp" ] && mv -f "$TEMP/Resources/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
+        mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules
         
         # Install UI app
-        mv -f "$TEMP/nihon.app" "$APP_DIR/nihon.app"
+        cp -R "$TEMP/nihon.app" "$APP_DIR/nihon.app"
     ) & spinner "Installing Nihon" $!
 
     section "Finishing installation"
