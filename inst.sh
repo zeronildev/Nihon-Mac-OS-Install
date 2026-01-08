@@ -80,7 +80,7 @@ main() {
     rm -rf ~/Nihon/modules/latest.json ~/Nihon/modules/luau-lsp ~/Nihon/modules/Server
 
     section "Fetching client version"
-    local version="version-cfe7460f53b444a5"  
+    local version="version-d0722e371e604117"  
     echo -e "${INFO} Version: ${BOLD}$version${NC}"
 
     section "Downloading Roblox - ($version)"
