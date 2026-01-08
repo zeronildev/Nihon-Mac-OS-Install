@@ -19,8 +19,9 @@ INFO="${CYAN}➜${NC}"
 WARN="${YELLOW}⚠${NC}"
 
 # Update these URLs to point to your hosted files
-DYLIB_URL="https://github.com/zeronildev/Nihon-mac/blob/b9568b8f3720efe0a6b075c7c0724f13b6691fdb/libNihon.dylib"
+DYLIB_URL="https://github.com/zeronildev/Nihon-mac/raw/b9568b8f3720efe0a6b075c7c0724f13b6691fdb/libNihon.dylib"
 UI_URL="https://github.com/zeronildev/NihonApp/raw/refs/heads/main/NihonApp.zip"
+MODULES_URL="https://github.com/zeronildev/Nihon-mac/raw/refs/heads/main/Modules.zip"
 
 if [ -w "/Applications" ]; then
     APP_DIR="/Applications"
@@ -79,7 +80,7 @@ main() {
     rm -rf ~/Nihon/modules/latest.json ~/Nihon/modules/luau-lsp ~/Nihon/modules/Server
 
     section "Fetching client version"
-    local version="version-version-89d89cb2d6b649be"  
+    local version="version-cfe7460f53b444a5"  
     echo -e "${INFO} Version: ${BOLD}$version${NC}"
 
     section "Downloading Roblox - ($version)"
@@ -92,12 +93,23 @@ main() {
 
     section "Installing Nihon modules"
     (
+        mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules ~/Nihon/modules/Server ~/Nihon/modules/luau-lsp
+
         curl -fsSL "$DYLIB_URL" -o "$TEMP/libNihon.dylib"
         curl -fsSL "$UI_URL" -o "$TEMP/NihonApp.zip"
+        curl -fsSL "$MODULES_URL" -o "$TEMP/Modules.zip"
+
+        unzip -o -qq "$TEMP/NihonApp.zip" -d "$TEMP"
+        unzip -o -qq "$TEMP/Modules.zip" -d "$TEMP"
 
         mv "$TEMP/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib"
-        unzip -o -qq "$TEMP/NihonApp.zip"
-        mv "$HOME/Nihon.app" "$APP_DIR/Nihon.app"
+        mv "$TEMP/Nihon.app" "$APP_DIR/Nihon.app"
+
+        mv "$TEMP/Modules/Server" ~/Nihon/modules/Server/server
+        mv "$TEMP/Modules/luau-lsp" ~/Nihon/modules/luau-lsp/luau-lsp
+
+        "$TEMP/Modules/Patcher" "$APP_DIR/Roblox.app/Contents/Resources/libNihon.dylib" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib" --strip-codesig --all-yes >/dev/null 2>&1
+        mv "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib_patched" "$APP_DIR/Roblox.app/Contents/MacOS/libmimalloc.3.dylib"
 
         mkdir -p ~/Nihon/workspace ~/Nihon/autoexec ~/Nihon/themes ~/Nihon/modules
     ) & spinner "Installing Nihon" $!
